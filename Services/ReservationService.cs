@@ -44,13 +44,19 @@ public class ReservationService : IReservationService
   }
   public async Task DeleteAsync(Guid id)
   {
-  var reservation = await _reservationRepository.GetByIdAsync(id);
+    var reservation = await _reservationRepository.GetByIdAsync(id);
 
-  if (reservation == null)
-  {
-    throw new InvalidOperationException("Reservation not found");
+    if (reservation == null)
+    {
+      throw new InvalidOperationException("Reservation not found");
+    }
+
+    await _reservationRepository.DeleteAsync(id);
   }
 
-  await _reservationRepository.DeleteAsync(id);
+  public async Task<List<ReservationResponse>> GetByDateAsync(DateOnly date)
+  {
+    var reservations = await _reservationRepository.GetByDateAsync(date);
+    return reservations.Select(ReservationMapper.ToResponse).ToList();
   }
 }
